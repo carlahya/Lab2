@@ -9,28 +9,75 @@ Your job (via the AI harness):
   (hint: polymorphism / a common interface). Then add a Triangle to prove it.
 """
 
+# pylint: disable=too-few-public-methods
+
 import math
+from dataclasses import dataclass
+from typing import Protocol
 
 
-def area(shape):
-    if shape["type"] == "circle":
-        return math.pi * shape["radius"] ** 2
-    elif shape["type"] == "rectangle":
-        return shape["width"] * shape["height"]
-    elif shape["type"] == "square":
-        return shape["side"] * shape["side"]
-    else:
-        raise ValueError("Unknown shape")
+class Shape(Protocol):
+    """Common interface for shapes that can calculate their area."""
+
+    def area(self):
+        """Return this shape's area."""
 
 
-def total_area(shapes):
-    return sum(area(s) for s in shapes)
+@dataclass
+class Circle:
+    """Circle shape."""
+
+    radius: float
+
+    def area(self):
+        """Return the circle area."""
+        return math.pi * self.radius**2
+
+
+@dataclass
+class Rectangle:
+    """Rectangle shape."""
+
+    width: float
+    height: float
+
+    def area(self):
+        """Return the rectangle area."""
+        return self.width * self.height
+
+
+@dataclass
+class Square:
+    """Square shape."""
+
+    side: float
+
+    def area(self):
+        """Return the square area."""
+        return self.side * self.side
+
+
+@dataclass
+class Triangle:
+    """Triangle shape."""
+
+    base: float
+    height: float
+
+    def area(self):
+        """Return the triangle area."""
+        return self.base * self.height / 2
+
+
+def total_area(shape_items):
+    """Return the combined area of all shapes."""
+    return sum(shape.area() for shape in shape_items)
 
 
 if __name__ == "__main__":
     shapes = [
-        {"type": "circle", "radius": 2},
-        {"type": "rectangle", "width": 3, "height": 4},
-        {"type": "square", "side": 5},
+        Circle(radius=2),
+        Rectangle(width=3, height=4),
+        Square(side=5),
     ]
     print("Total area:", total_area(shapes))

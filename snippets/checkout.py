@@ -8,29 +8,33 @@ Your job (via the AI harness):
   Make it readable WITHOUT changing behaviour — meaningful names,
   named constants, guard clauses, remove duplication. Keep the output identical.
 """
+MEMBERSHIP_DISCOUNTS = {
+    2: 0.10,
+    3: 0.20,
+}
+LOYALTY_POINTS_DISCOUNT_THRESHOLD = 500
+LOYALTY_POINTS_DISCOUNT = 5
+MINIMUM_TOTAL = 0
 
 
-def calc(c, m, lp):
-    # c = cart items, m = membership level, lp = loyalty points
-    if c != None:
-        if len(c) > 0:
-            t = 0
-            for i in c:
-                t = t + i["p"] * i["q"]
-            if m == 2:
-                t = t - t * 0.10
-            else:
-                if m == 3:
-                    t = t - t * 0.20
-            if lp > 500:
-                t = t - 5
-            if t < 0:
-                t = 0
-            return t
-        else:
-            return 0
-    else:
+def calculate_total(cart_items, membership_level, loyalty_points):
+    """Return the cart total after membership and loyalty discounts."""
+    if not cart_items:
         return 0
+
+    subtotal = sum(item["p"] * item["q"] for item in cart_items)
+    membership_discount = MEMBERSHIP_DISCOUNTS.get(membership_level, 0)
+    total = subtotal * (1 - membership_discount)
+
+    if loyalty_points > LOYALTY_POINTS_DISCOUNT_THRESHOLD:
+        total -= LOYALTY_POINTS_DISCOUNT
+
+    return max(total, MINIMUM_TOTAL)
+
+
+def calc(cart_items, membership_level, loyalty_points):
+    """Compatibility wrapper for the original lab function name."""
+    return calculate_total(cart_items, membership_level, loyalty_points)
 
 
 if __name__ == "__main__":
